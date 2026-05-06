@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Калькулятор времени на ИВЛ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 48px;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(2px);
+            padding: 28px 24px 36px;
+            transition: all 0.2s ease;
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+            color: #1e2a3e;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            letter-spacing: -0.2px;
+        }
+
+        h1::before {
+            content: "🫁 ";
+            font-size: 2rem;
+        }
+
+        .sub {
+            color: #2c3e50;
+            border-left: 4px solid #3b82f6;
+            padding-left: 14px;
+            margin: 8px 0 28px 0;
+            font-weight: 450;
+            font-size: 0.95rem;
+            background: #f0f7ff;
+            border-radius: 20px;
+            line-height: 1.3;
+        }
+
+        .time-fields {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .field-group {
+            flex: 1;
+            min-width: 230px;
+            background: #f8fafc;
+            padding: 18px 18px 20px;
+            border-radius: 32px;
+            transition: all 0.2s;
+            border: 1px solid #e2edff;
+        }
+
+        .field-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+        }
+
+        .field-group label span {
+            font-size: 1.35rem;
+        }
+
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 44px;
+            transition: 0.2s;
+            outline: none;
+            color: #0f172a;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        input[type="datetime-local"]:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+
+        .btn-calc {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin: 8px 0 24px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 14px rgba(0, 27, 65, 0.2);
+        }
+
+        .btn-calc:hover {
+            background: #2563eb;
+            transform: scale(0.98);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-box {
+            background: #eef3ff;
+            border-radius: 38px;
+            padding: 20px 24px;
+            margin-top: 8px;
+            text-align: center;
+            border: 1px solid #cddff7;
+            transition: 0.2s;
+        }
+
+
+
+.result-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .duration {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #0c4a6e;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .error-msg {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 12px;
+            border-radius: 48px;
+            font-weight: 500;
+        }
+
+        hr {
+            margin: 20px 0 8px;
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, #cbd5e1, transparent);
+        }
+
+        .note {
+            font-size: 0.75rem;
+            color: #475569;
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        @media (max-width: 550px) {
+            .card {
+                padding: 20px 16px;
+            }
+            .duration {
+                font-size: 1.5rem;
+            }
+            .field-group {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Калькулятор времени на ИВЛ</h1>
+    <div class="sub">
+        📅  Рассчитайте точную длительность искусственной вентиляции лёгких<br>
+        ⏱️  Выберите дату и время начала и окончания (с точностью до минуты)
+    </div>
+
+    <div class="time-fields">
+        <!-- Начало ИВЛ -->
+        <div class="field-group">
+            <label><span>🟢 </span> Начало ИВЛ</label>
+            <input type="datetime-local" id="startDateTime" class="datetime-input">
+        </div>
+
+        <!-- Окончание ИВЛ -->
+        <div class="field-group">
+            <label><span>🔴 </span> Окончание ИВЛ</label>
+            <input type="datetime-local" id="endDateTime" class="datetime-input">
+        </div>
+    </div>
+
+    <button class="btn-calc" id="calcBtn">
+        ⏳ Рассчитать продолжительность
+    </button>
+
+    <div class="result-box" id="resultBox">
+        <div class="result-label">⏲️  Время под ИВЛ</div>
+        <div class="duration" id="durationDisplay">— дн. — ч. — мин.</div>
+    </div>
+    <div class="note">
+        ※ Промежуток рассчитывается по локальному времени. Если окончание раньше начала — будет указана ошибка.
+    </div>
+</div>
+
+<script>
+    // ---------- Вспомогательные функции ----------
+    function padNumber(num) {
+        return String(num).padStart(2, '0');
+    }
+
+    // Получить строку для datetime-local из объекта Date (локальное время)
+    function getLocalDateTimeString(date) {
+        let year = date.getFullYear();
+        let month = padNumber(date.getMonth() + 1);
+        let day = padNumber(date.getDate());
+        let hours = padNumber(date.getHours());
+        let minutes = padNumber(date.getMinutes());
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    // Преобразовать значение из input datetime-local в Date (локальное, без таймзоны)
+    function parseLocalDateTime(dateTimeStr) {
+        if (!dateTimeStr) return null;
+        // формат "YYYY-MM-DDThh:mm"
+        let parts = dateTimeStr.split('T');
+        if (parts.length !== 2) return null;
+        let datePart = parts[0];
+        let timePart = parts[1];
+        let dateArr = datePart.split('-').map(Number);
+        let timeArr = timePart.split(':').map(Number);
+        if (dateArr.length !== 3 || timeArr.length < 2) return null;
+        let [year, month, day] = dateArr;
+        let [hour, minute] = timeArr;
+        // Месяц в JS начинается с 0
+        return new Date(year, month - 1, day, hour, minute, 0, 0);
+    }
+
+    // Склонение числительных на русском
+    function declOfNum(number, titles) {
+        let cases = [2, 0, 1, 1, 1, 2];
+        let n = Math.abs(number);
+        return titles[(n % 100 > 4 && n % 100 < 20) ? 2 : cases[(n % 10 < 5) ? n % 10 : 5]];
+    }
+
+// Форматирование продолжительности с правильными словами (день/дня/дней и т.д.)
+    function formatDuration(days, hours, minutes) {
+        let dayStr = days + " " + declOfNum(days, ['день', 'дня', 'дней']);
+        let hourStr = hours + " " + declOfNum(hours, ['час', 'часа', 'часов']);
+        let minuteStr = minutes + " " + declOfNum(minutes, ['минута', 'минуты', 'минут']);
+        return `${dayStr}, ${hourStr}, ${minuteStr}`;
+    }
+
+    // Основная логика расчёта
+    function calculateDuration() {
+        const startInput = document.getElementById('startDateTime').value;
+        const endInput = document.getElementById('endDateTime').value;
+        const resultDiv = document.getElementById('durationDisplay');
+
+        // Проверка на заполненность
+        if (!startInput || !endInput) {
+            resultDiv.innerHTML = "❌ Заполните оба поля (начало и окончание)";
+            resultDiv.classList.add('error-msg');
+            return;
+        }
+
+        const startDate = parseLocalDateTime(startInput);
+        const endDate = parseLocalDateTime(endInput);
+
+        if (!startDate || !endDate) {
+            resultDiv.innerHTML = "⚠️  Неверный формат даты/времени";
+            resultDiv.classList.add('error-msg');
+            return;
+        }
+
+        // Проверка корректности: окончание должно быть позже начала (или равным)
+        if (endDate < startDate) {
+            resultDiv.innerHTML = "⛔ Ошибка: Окончание ИВЛ не может быть раньше начала!";
+            resultDiv.classList.add('error-msg');
+            return;
+        }
+
+        // Разница в миллисекундах
+        let diffMs = endDate - startDate;
+        if (diffMs === 0) {
+            resultDiv.innerHTML = "0 дней, 0 часов, 0 минут";
+            resultDiv.classList.remove('error-msg');
+            return;
+        }
+
+        // Переводим в минуты (целое количество, отбрасываем секунды/миллисекунды)
+        let totalMinutes = Math.floor(diffMs / (1000 * 60));
+        
+        let days = Math.floor(totalMinutes / (60 * 24));
+        let remainingMinutes = totalMinutes % (60 * 24);
+        let hours = Math.floor(remainingMinutes / 60);
+        let minutes = remainingMinutes % 60;
+
+        // Красивое форматирование с русскими окончаниями
+        let formatted = formatDuration(days, hours, minutes);
+        resultDiv.innerHTML = formatted;
+        resultDiv.classList.remove('error-msg');
+    }
+
+    // Установка демонстрационных значений (пример: начало ~ сейчас, окончание +2 часа)
+    function setDefaultTimes() {
+        const now = new Date();
+        // Начало ИВЛ: текущая дата и время с округлением до минут (секунды не влияют)
+        let startDefault = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 0, 0);
+        
+        // Окончание: плюс 2 часа от startDefault
+        let endDefault = new Date(startDefault.getTime() + 2 * 60 * 60 * 1000);
+        
+        const startInput = document.getElementById('startDateTime');
+        const endInput = document.getElementById('endDateTime');
+        
+        if (startInput && endInput) {
+            startInput.value = getLocalDateTimeString(startDefault);
+            endInput.value = getLocalDateTimeString(endDefault);
+        }
+    }
+
+    // Альтернативно: подстрахуем, если в браузере пользователь очистил поля, но не хотим принудительно сбрасывать при reload
+    // при загрузке страницы ставим наглядный пример для удобства
+    window.addEventListener('DOMContentLoaded', () => {
+        setDefaultTimes();
+        // Дополнительно можно сразу отобразить результат для примера
+        calculateDuration();
+    });
+
+    // Кнопка расчёта
+    document.getElementById('calcBtn').addEventListener('click', calculateDuration);
+
+    // Дополнительное удобство: если пользователь изменил поля, расчёт можно делать и по enter? 
+    // Для максимальной простоты оставляем кнопку, но добавим авто-расчёт при изменении полей (опционально)
+// Сделаем так, чтобы при редактировании даты/времени тоже пересчитывалось (удобно)
+    const startField = document.getElementById('startDateTime');
+    const endField = document.getElementById('endDateTime');
+    if (startField && endField) {
+        startField.addEventListener('change', calculateDuration);
+        endField.addEventListener('change', calculateDuration);
+    }
+</script>
+</body>
+</html>
