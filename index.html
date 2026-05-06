@@ -330,13 +330,13 @@
         let hours = Math.floor(remainingMinutes / 60);
         let minutes = remainingMinutes % 60;
 
-        // Красивое форматирование с русскими окончаниями
+        
         let formatted = formatDuration(days, hours, minutes);
         resultDiv.innerHTML = formatted;
         resultDiv.classList.remove('error-msg');
     }
 
-    // Установка демонстрационных значений (пример: начало ~ сейчас, окончание +2 часа)
+    
     function setDefaultTimes() {
         const now = new Date();
         // Начало ИВЛ: текущая дата и время с округлением до минут (секунды не влияют)
@@ -354,20 +354,17 @@
         }
     }
 
-    // Альтернативно: подстрахуем, если в браузере пользователь очистил поля, но не хотим принудительно сбрасывать при reload
-    // при загрузке страницы ставим наглядный пример для удобства
+    
     window.addEventListener('DOMContentLoaded', () => {
         setDefaultTimes();
-        // Дополнительно можно сразу отобразить результат для примера
+        
         calculateDuration();
     });
 
     // Кнопка расчёта
     document.getElementById('calcBtn').addEventListener('click', calculateDuration);
 
-    // Дополнительное удобство: если пользователь изменил поля, расчёт можно делать и по enter? 
-    // Для максимальной простоты оставляем кнопку, но добавим авто-расчёт при изменении полей (опционально)
-// Сделаем так, чтобы при редактировании даты/времени тоже пересчитывалось (удобно)
+    
     const startField = document.getElementById('startDateTime');
     const endField = document.getElementById('endDateTime');
     if (startField && endField) {
